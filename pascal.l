@@ -102,20 +102,37 @@ int getToken()
 {
 	static int firstTime = 1;
 	int currentToken, i;
-	if (firstTime)
-	{
+
+	if (firstTime){
 		firstTime = 0;
 		lineno++;
 		yyin = source;
 //		yyout = listing;
 	}
+
 	currentToken = yylex();
+
+    switch(currentToken){
+    case ID:
+    case CHAR:
+    case INTEGER:
+    case REAL:
+    case STRING:
+		memset(tokenString, 0, sizeof(tokenString));
+		strcpy(tokenString, yytext);
+        break;
+    }   
+/*
 	if (currentToken == ID || currentToken == CHAR || currentToken == INTEGER || currentToken == REAL || currentToken == STRING)
 	{
 		memset(tokenString, 0, sizeof(tokenString));
 		strcpy(tokenString, yytext);
 	}
+*/
+
+    // convert to lower-case tokens
 	for (i = 0; tokenString[i]; i++)
 		tokenString[i] = tolower(tokenString[i]);
+
 	return currentToken;
 }

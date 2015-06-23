@@ -10,3 +10,4 @@ gcc -c assembler.c
 gcc -c main.c
 gcc -o compiler main.o lex.yy.o y.tab.o utils.o symtab.o assembler.o -lfl
 
+./clean.sh
