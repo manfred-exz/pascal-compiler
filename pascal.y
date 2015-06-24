@@ -38,9 +38,12 @@ const_part: CONST const_expr_list {$$ = $2;}
 const_expr_list: const_expr_list id_tmp EQUAL const_value SEMI
 				 {
 					TreeNode *t = $1;
+
 					TreeNode *newNode = newConstDeclNode();
 					newNode->id = $2->id;
 					newNode->child[0] = $4;
+
+                    /* add new expr to the end of expr list */
 					if (t != NULL)
 					{
 						while (t->sibling != NULL)
@@ -51,6 +54,7 @@ const_expr_list: const_expr_list id_tmp EQUAL const_value SEMI
 					else
 						$$ = newNode;
 				 }
+                /* the first expr in the list */
 			   | id_tmp EQUAL const_value SEMI
 			   {
 				$$ = newConstDeclNode();
@@ -128,6 +132,7 @@ type_decl: simple_type_decl
 		 | array_type_decl {$$ = $1;}
 		 | record_type_decl {$$ = $1;};
 
+
 array_type_decl: ARRAY LB simple_type_decl RB OF type_decl
 				 {
 					$$ = newTypeNode(TypeArrayK);
@@ -185,7 +190,7 @@ name_list: name_list COMMA ID
 			$$->id = copyString(tokenString);
 		   };
 
-simple_type_decl: SBOOLEAN
+simple_type_decl: 	      SBOOLEAN
 				  {
 					$$ = newSimpleNode(BooleanK);
 				  }
@@ -666,7 +671,7 @@ static int yylex()
 
 TreeNode *parse()
 {
-	yydebug = 1;
+	yydebug = 0;
 	yyparse();
 	return savedTree;
 }

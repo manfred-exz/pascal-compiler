@@ -26,14 +26,20 @@ typedef enum {MulK, DivK, ModK, AndK} TermKind;
 
 typedef struct treeNode
 {
+    // Node Structure
 	struct treeNode *child[5];
 	struct treeNode *sibling, *lsibling;
+
+    // Node ID
 	char *id, *id2;
+
 	int is_minus;
 	int label;
 	int dest;
 	int is_not;
 	int size, t_size, low_bound;
+
+    // Node Type
 	NodeKind nodekind;
 	union {
 		TypeKind type_kind;
@@ -46,11 +52,14 @@ typedef struct treeNode
 		ExprKind expr_kind;
 		TermKind term_kind;
 	} kind;
+
+    // Node Value
 	union {
 		int int_value;
 		float real_value;
 		char *str_value;
 	} value;
+
 } TreeNode;
 
 #endif

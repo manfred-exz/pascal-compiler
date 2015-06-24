@@ -1,4 +1,8 @@
 program test_1;
+const 
+p = 3;
+q = 4;
+
 var n:integer;
 function fib(x:integer):integer;
 begin

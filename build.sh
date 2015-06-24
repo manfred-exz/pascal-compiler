@@ -1,6 +1,7 @@
 #! /bin/bash
 
-yacc -d pascal.y
+yacc pascal.y
+#yacc -d pascal.y
 flex pascal.l
 gcc -c lex.yy.c
 gcc -c y.tab.c
