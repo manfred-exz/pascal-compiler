@@ -13,6 +13,10 @@ books = record
     book_id: integer;
 end;
 
+var
+    weekdays, holidays : integer;
+    zm : age;
+
 function fib(x:integer):integer;
 begin
   if ((x = 0) or (x = 1)) then

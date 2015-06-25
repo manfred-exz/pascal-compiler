@@ -103,23 +103,16 @@ ret
 test_1:
 push ebp
 mov ebp, esp
-sub esp, 4
-call readInt
-push eax
-pop eax
-push ebp
-mov [ebp -4], eax
-pop ebp
-push ebp
-mov eax, dword ptr [ebp -4]
-pop ebp
+sub esp, 412
 push eax
 call fib
 add esp, 4
 push eax
 call writeInt
 add esp, 4
-add esp, 4
+add esp, 412
 pop ebp
 ret
+p dd 3
+q dd 4
 end program

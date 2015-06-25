@@ -153,6 +153,8 @@ int calc_type_size(TreeNode *t)
 			return calc_type_record_size(t);
 		}
 	}
+
+	return 0;
 }
 
 char *gen_label()

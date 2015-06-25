@@ -39,6 +39,15 @@ void print_routine(TreeNode *routine) {
         int i;
         const int n_child = sizeof(routine->child) / sizeof(routine->child[0]);
 
+        // if routine is empty, don't print it.
+        int is_empty = 1;
+        for(i = 0; i < n_child; i++){
+            if(routine->child[i] != NULL)
+                is_empty = 0;
+        }
+        if(is_empty == 1)
+            return;
+
         print_start("routine");
         for (i = 0; i < n_child; i++) {
             if (routine->child[i] != NULL) {
@@ -55,15 +64,14 @@ void simple_type_str(const TreeNode *node) {
     char *simpleKindStr[8] = {"char", "integer", "real", "string",
                               "boolean", "id", "namelist", "dotdot"};
 
-    char buf1[20], buf2[20];
 
     SimpleKind kind = node->kind.simple_kind;
-    if(kind != DotDotK && kind != NameListK)
+    if (kind != DotDotK && kind != NameListK && kind != IdK)
         tree_print(simpleKindStr[kind]);
 
-    switch (kind){
+    switch (kind) {
         case IdK:
-            tree_print("ID: %s", node->id);
+            tree_print("%s", node->id);
             break;
         case DotDotK:
             node_str(node->child[0]); //dotL
@@ -84,25 +92,25 @@ void value_str(const TreeNode *node) {
 
     switch (kind) {
         case IntegerK:
-            if(node->is_minus)
+            if (node->is_minus)
                 flag = '-';
 //            sprintf(str, "int:%c%d", flag, node->value.int_value);
             tree_print("int:%c%d", flag, node->value.int_value);
             break;
         case RealK:
-            if(node->is_minus)
+            if (node->is_minus)
                 flag = '-';
             tree_print("real:%c%.2lf", flag, node->value.real_value);
 //            sprintf(str, "real:%c%.2lf", flag, node->value.real_value);
             break;
         case CharK:
-            if(node->is_minus)
+            if (node->is_minus)
                 flag = '-';
             tree_print("char:%c%d", flag, node->value.int_value);
 //            sprintf(str, "char:%c%d", flag, node->value.int_value);
             break;
         case StringK:
-            tree_print( "string:%s", node->value.str_value);
+            tree_print("string:%s", node->value.str_value);
 //            sprintf(str, "string:%s", node->value.str_value);
             break;
         case BooleanK:
@@ -120,7 +128,6 @@ void value_str(const TreeNode *node) {
 
 void type_str(TreeNode *node) {
     TypeKind kind = node->kind.type_kind;
-    char buf1[1024], buf2[255];
 
     switch (kind) {
         case TypeSimpleK:
@@ -142,14 +149,12 @@ void type_str(TreeNode *node) {
 }
 
 
-
-
 void name_list_str(TreeNode *name_list_node) {
     int is_first_time = 1;
     tree_print("(");
 
-    while(name_list_node != NULL){
-        if(is_first_time)
+    while (name_list_node != NULL) {
+        if (is_first_time)
             tree_print("%s", name_list_node->id);
         else
             tree_print(", %s", name_list_node->id);
@@ -162,12 +167,10 @@ void name_list_str(TreeNode *name_list_node) {
 }
 
 void record_str(TreeNode *filedNode) {
-    char buf_name_list[512], type_decl[512];
-
     print_indent();
     print_start("recoard");
 
-    while(filedNode != NULL){
+    while (filedNode != NULL) {
         print_indent();
         node_str(filedNode->child[0]);
         node_str(filedNode->child[1]);
@@ -179,6 +182,29 @@ void record_str(TreeNode *filedNode) {
     print_indent();
     tree_print("end;");
     nspc += 2;
+    print_finish();
+}
+
+void var_str(TreeNode *var_decl_node) {
+    tree_print("Var: ");
+    node_str(var_decl_node->child[0]);
+    tree_print(" is of type: ");
+    node_str(var_decl_node->child[1]);
+    tree_print(";");
+}
+
+void params_str(TreeNode *param_node) {
+    print_indent();
+    print_start("parameter");
+    while(param_node != NULL) {
+        print_indent();
+        node_str(param_node->child[0]);     // name_list
+        tree_print(": ");
+        node_str(param_node->child[1]);     // type
+        tree_print(";");
+
+        param_node = param_node->sibling;
+    }
     print_finish();
 }
 
@@ -200,19 +226,33 @@ void node_str(TreeNode *typeNode) {
         return;
     }
 
-    if( typeNode->nodekind == NameListK){
+    if (typeNode->nodekind == NameListK) {
         name_list_str(typeNode);
         return;
     }
 
-    if( typeNode->nodekind == RecordK){
+    if (typeNode->nodekind == RecordK) {
         record_str(typeNode);
+        return;
+    }
+
+    if (typeNode->nodekind == VarDeclK){
+        var_str(typeNode);
+        return;
+    }
+
+    if(typeNode->nodekind == ParaK){
+        params_str(typeNode);
+        return;
+    }
+
+    if(typeNode->nodekind == RoutineK){
+        print_routine(typeNode);
         return;
     }
 
     return;
 }
-
 
 void print_const_part(TreeNode *part) {
     if (part == NULL)
@@ -224,7 +264,7 @@ void print_const_part(TreeNode *part) {
     while (part != NULL) {
         constNode = part->child[0]; //const value node
         print_indent();
-        tree_print("ID: {%s} = ", part->id);
+        tree_print("Const: {%s} = ", part->id);
 
         node_str(constNode);
 
@@ -244,7 +284,7 @@ void print_type_part(TreeNode *part) {
     while (part != NULL) {
         typeNode = part->child[0];
         print_indent();
-        tree_print("ID: {%s} is of type ", part->id);
+        tree_print("Type: {%s} is of type ", part->id);
 
         node_str(typeNode);
 
@@ -257,20 +297,66 @@ void print_var_part(TreeNode *part) {
     if (part == NULL)
         return;
 
-    TreeNode *typeNode;
-
-    print_start("[type part]");
+    print_start("[var part]");
     // the Node 'part' is also a type decl node
     while (part != NULL) {
-        typeNode = part->child[0];
         print_indent();
-        tree_print("ID: {%s} is of type ", part->id);
 
-        node_str(typeNode);
+        node_str(part);
 
         part = part->sibling;
     }
     print_finish();
+}
+
+void print_func_part(TreeNode *func_proc_node) {
+    if (func_proc_node == NULL)
+        return;
+
+    print_start("[routine part]");
+    while (func_proc_node != NULL) {
+        print_indent();
+
+        if(func_proc_node->kind.func_proc_kind == FuncK){
+            tree_print("Function: {%s}", func_proc_node->id);
+
+            node_str(func_proc_node->child[0]); // parameters
+            print_indent();
+            tree_print("(return-type: ");
+            node_str(func_proc_node->child[1]); // function return type
+            tree_print(")");
+            tree_print(";");
+            print_indent();
+            node_str(func_proc_node->child[2]); // function body
+            tree_print(";");
+        }
+        else if(func_proc_node->kind.func_proc_kind == ProcK){
+            tree_print("Procedure: {%s}", func_proc_node->id);
+
+            node_str(func_proc_node->child[0]); // parameters
+            print_indent();
+            tree_print(";");
+            print_indent();
+            node_str(func_proc_node->child[1]); // function body
+            tree_print(";");
+        }
+        else
+            tree_print("unknown routine type, neither function or procedure\n");
+
+
+
+        func_proc_node = func_proc_node->sibling;
+    }
+    print_finish();
+}
+
+/* todo: compound_stmt */
+void print_comp_part(TreeNode *comp_node) {
+    if(comp_node == NULL)
+        return;
+
+    print_start("[compound stmt]");
+
 }
 
 // part: every non-empty routine part.
@@ -289,6 +375,13 @@ void print_routine_part(TreeNode *part) {
         case VarDeclK:
             print_var_part(part);
             break;
+        case FuncProcK:
+            print_func_part(part);
+            break;
+        case StmtK:
+            print_comp_part(part);
+            break;
+
         default:
             break;
     }
@@ -300,6 +393,8 @@ void tree_print(char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     vfprintf(stdout, fmt, args);
+    /*!!debug!!*/
+    fflush(stdout);
     va_end(args);
 }
 
@@ -317,43 +412,3 @@ void print_finish() {
     tree_print(")");
     nspc -= 2;
 }
-
-/*
-
-void print_id (IDENT *id)
-{
-    if (id)
-        tree_print ("|%s|", id->id_chars);
-}
-
-void print_bind (BINDING *b)
-{
-    if (b) {
-        DECL *d = b->bind_decl;
-        print_id (b->bind_id);
-        if (d) {
-            SYMTAB *s = d->decl_symtab;
-            tree_print (", number: %d", d->decl_number);
-            if (s)
-                tree_print (", scope: %d", s->symtab_number);
-        }
-    }
-}
-
-void print_op (int op)
-{
-    tree_print ("op(");
-    switch(op) {
-        case OR_ : tree_print ("OR" ); break;
-        case AND_: tree_print ("AND"); break;
-        case NOT_: tree_print ("NOT"); break;
-        case LE_ : tree_print ("<=" ); break;
-        case GE_ : tree_print (">=" ); break;
-        case NE_ : tree_print ("<>" ); break;
-        case DIV_: tree_print ("DIV"); break;
-        case MOD_: tree_print ("MOD"); break;
-        default  : tree_print ("%c", op); break;
-    }
-    tree_print(")");
-}
- */
