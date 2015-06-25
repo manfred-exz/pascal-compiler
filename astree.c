@@ -14,8 +14,11 @@ void type_str(TreeNode *node);
 void simple_type_str(const TreeNode *node);
 
 void name_list_str(TreeNode *name_list_node);
+void print_cmp_mark(ExpressionKind kind);
 
 // print the structure of the tree
+
+void expression_list_str(TreeNode *expression_list_node);
 
 void print_ast(TreeNode *parseTree, char *treename) {
     printf("print ast!\n");
@@ -208,6 +211,247 @@ void params_str(TreeNode *param_node) {
     print_finish();
 }
 
+void stmt_str(TreeNode *stmtNode) {
+    switch (stmtNode->kind.stmt_kind){
+        case AssignK:
+            print_indent();
+            // id [exp] = exp
+            if(stmtNode->child[1]){
+                tree_print(stmtNode->id);
+                tree_print("[");
+                node_str(stmtNode->child[0]);   // [expression]
+                tree_print("] := ");
+                node_str(stmtNode->child[1]);   // == expression
+            }
+            // id.id = expression
+            else if(stmtNode->id2){
+                tree_print("%s.%s := ", stmtNode->id, stmtNode->id2);
+                node_str(stmtNode->child[0]);
+            }
+            // id == exp
+            else if(stmtNode->child[1] == NULL && stmtNode->id2 == NULL){
+                tree_print(stmtNode->id);
+                tree_print(" := ");
+                node_str(stmtNode->child[0]);
+            }
+            break;
+        case SProcK:
+            print_indent();
+            // proc(exp_list)
+            if(stmtNode->child[0]) {
+                tree_print(stmtNode->id);
+                tree_print("(");
+                node_str(stmtNode->child[0]);   //exp_list
+                tree_print(")");
+            }
+            else {
+                tree_print(stmtNode->id);
+            }
+            break;
+        case CompoundK:
+            // BEGIN stmt_list END
+            print_start("BEGIN");
+            node_str(stmtNode);     // stmt_list
+            tree_print("END");
+            print_finish();
+            break;
+        case ForK:
+
+            break;
+        case GotoK:
+            break;
+        // IF expression THEN stmt [ELSE stmt]
+        case IfK:
+            print_start("IF");
+            node_str(stmtNode->child[0]);   //expression
+            print_finish();
+            print_start("THEN");
+            node_str(stmtNode->child[1]);   //stmt
+            print_finish();
+            if(stmtNode->child[2]){
+                print_indent();
+                print_start("ELSE");
+                node_str(stmtNode->child[2]);
+                print_finish();
+            }
+            break;
+        case RepeatK:
+            break;
+        case SCaseK:
+            break;
+        case WhileK:
+            break;
+        default:
+            break;
+    }
+}
+
+
+void print_calc_mark(ExprKind kind) {
+    switch (kind){
+        case PlusK:
+            tree_print("+");
+            break;
+        case MinusK:
+            tree_print("-");
+            break;
+        case OrK:
+            tree_print("|");
+            break;
+        default:
+            tree_print("unknown calc mark");
+    }
+}
+
+
+void factor_str(struct treeNode *factor_node) {
+    if(factor_node->is_minus)
+        tree_print("-");
+
+    // function: id ( expression list )
+    if(factor_node->id && factor_node->child[0] &&
+            factor_node->child[0]->nodekind == ExpressionListK){
+        tree_print("%s(", factor_node->id);
+        node_str(factor_node->child[0]);
+        tree_print(")");
+        return;
+    }
+
+    // constant: const_value
+    if(factor_node->child[0] &&  factor_node->child[0]->nodekind == ConstK){
+        node_str(factor_node->child[0]);
+        return;
+    }
+
+    // (exp))
+    if( factor_node->child[0] && factor_node->child[0]->nodekind == ExpressionK){
+        tree_print("(");
+        node_str(factor_node->child[0]);
+        tree_print(")");
+        return;
+    }
+
+    // array.element: array[index]
+    if( factor_node->id && factor_node->child[1]) {
+        tree_print("%s[", factor_node->id);
+        node_str(factor_node->child[1]);
+        tree_print("]");
+        return;
+    }
+
+    // id .. id
+    if(factor_node->id && factor_node->id2){
+        tree_print("%s .. %s", factor_node->id, factor_node->id2);
+        return;
+    }
+
+    // id
+    if(factor_node->id)
+        tree_print(factor_node->id);
+
+    return;
+}
+
+void term_str(TreeNode *term_node){
+    if (term_node->nodekind == FactorK){
+        factor_str(term_node);
+        return;
+    }
+
+    // deep first, left first travel
+
+    if (term_node->child[0]->nodekind == TermK)
+        term_str(term_node->child[0]);
+    else if(term_node->child[0]->nodekind == FactorK)
+        factor_str(term_node->child[0]);
+    else
+        tree_print("error");
+
+    print_calc_mark(term_node->kind.expr_kind);
+
+    if (term_node->child[1]->nodekind == TermK)
+        term_str(term_node->child[1]);
+    else if(term_node->child[0]->nodekind == FactorK)
+        factor_str(term_node->child[1]);
+    else
+        tree_print("error");
+}
+
+void exp_str(TreeNode * exp_node){
+    if (exp_node->nodekind == TermK){
+        term_str(exp_node);
+        return;
+    }
+
+    // deep first, left first travel
+
+    if (exp_node->child[0]->nodekind == ExprK)
+        exp_str(exp_node->child[0]);
+    else if(exp_node->child[0]->nodekind == TermK)
+        term_str(exp_node->child[0]);
+    else
+        tree_print("error");
+
+    print_calc_mark(exp_node->kind.expr_kind);
+
+    if (exp_node->child[1]->nodekind == ExprK)
+        exp_str(exp_node->child[1]);
+    else if(exp_node->child[1]->nodekind == TermK)
+        term_str(exp_node->child[1]);
+    else
+        tree_print("error");
+}
+
+void expression_str(TreeNode *expression_node){
+    if (expression_node->nodekind == ExprK){
+        exp_str(expression_node);
+        return;
+    }
+
+    // deep first, left first travel
+
+    node_str(expression_node->child[0]);
+
+    print_cmp_mark(expression_node->kind.expression_kind);
+
+    node_str(expression_node->child[1]);
+}
+
+
+
+void print_cmp_mark(ExpressionKind kind) {
+    switch (kind){
+        // ==
+        case EqualK:
+            tree_print("==");
+            break;
+            // >=
+        case GeK:
+            tree_print(">=");
+            break;
+            // >
+        case GtK:
+            tree_print(">");
+            break;
+            // <=
+        case LeK:
+            tree_print("<=");
+            break;
+            // <
+        case LtK:
+            tree_print("<");
+            break;
+            // !=
+        case UnequalK:
+            tree_print("!=");
+            break;
+        default:
+            tree_print("[unknown mark]");
+            break;
+    }
+}
+
+
 void node_str(TreeNode *typeNode) {
 
     // constant value
@@ -251,7 +495,52 @@ void node_str(TreeNode *typeNode) {
         return;
     }
 
+    if(typeNode->nodekind == StmtK){
+        stmt_str(typeNode);
+        return;
+    }
+
+    if(typeNode->nodekind == ExpressionK){
+        expression_str(typeNode);
+        return;
+    }
+
+    if(typeNode->nodekind == ExpressionListK){
+        expression_list_str(typeNode);
+        return;
+    }
+
+    if(typeNode->nodekind == ExprK){
+        exp_str(typeNode);
+        return;
+    }
+
+    if(typeNode->nodekind == FactorK){
+        factor_str(typeNode);
+        return;
+    }
+
+    if(typeNode->nodekind == TermK){
+        term_str(typeNode);
+        return;
+    }
+
     return;
+}
+
+void expression_list_str(TreeNode *expression_list_node) {
+    if(expression_list_node != NULL) {
+        node_str(expression_list_node->child[0]);
+        expression_list_node = expression_list_node->sibling;
+    }
+    else
+        return;
+
+    while(expression_list_node != NULL){
+        tree_print(", ");
+        node_str(expression_list_node->child[0]);
+        expression_list_node = expression_list_node->sibling;
+    }
 }
 
 void print_const_part(TreeNode *part) {
@@ -355,8 +644,20 @@ void print_comp_part(TreeNode *comp_node) {
     if(comp_node == NULL)
         return;
 
-    print_start("[compound stmt]");
+    TreeNode *stmt_node = comp_node->child[0];
 
+    print_start("BEGIN");
+
+    while(stmt_node != NULL){
+        print_indent();
+        node_str(stmt_node);
+
+        stmt_node = stmt_node->sibling;
+    }
+
+    print_indent();
+    tree_print("END");
+    print_finish();
 }
 
 // part: every non-empty routine part.

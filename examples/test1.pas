@@ -26,5 +26,12 @@ begin
 end;
 begin
   n:=read;
+  age[10]:= 100;
+
   write(fib(n));
+  
+  if (n = 3) then
+      n:=0
+  else
+      n:=1;
 end.

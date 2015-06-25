@@ -602,7 +602,7 @@ term: term MUL factor
 		$$->child[1] = $3;
 	  }
     | term AND factor
-	  {
+	  { 
 		$$ = newTermNode(AndK);
 		$$->child[0] = $1;
 		$$->child[1] = $3;

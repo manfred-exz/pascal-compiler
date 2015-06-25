@@ -110,6 +110,26 @@ add esp, 4
 push eax
 call writeInt
 add esp, 4
+push eax
+mov eax, 3
+push eax
+pop ebx
+pop eax
+cmp eax, ebx
+je label_8
+push 0
+jmp label_9
+label_8:
+push 1
+label_9:
+pop eax
+push eax
+pop eax
+test eax, eax
+jz label_6
+jmp label_7
+label_6:
+label_7:
 add esp, 412
 pop ebp
 ret
