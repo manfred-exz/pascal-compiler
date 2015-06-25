@@ -6,6 +6,12 @@ q = 4;
 type
 n = integer;
 age = array [0 .. 100] of integer;
+test = ( one, two, three );
+books = record
+    title: array [1..50] of char;
+    author: array [1..50] of char;
+    book_id: integer;
+end;
 
 function fib(x:integer):integer;
 begin
