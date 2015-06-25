@@ -20,6 +20,10 @@ void print_cmp_mark(ExpressionKind kind);
 
 void expression_list_str(TreeNode *expression_list_node);
 
+void direction_str(TreeNode *direction_node);
+
+void case_str(TreeNode *case_exp_node);
+
 void print_ast(TreeNode *parseTree, char *treename) {
     printf("print ast!\n");
     if (!(treefile = fopen(treename, "w+")))
@@ -33,6 +37,8 @@ void print_ast(TreeNode *parseTree, char *treename) {
 void print_program(TreeNode *parseTree) {
     if (parseTree == NULL)
         printf("Unable to print. The abstract syntax tree is empty.\n");
+    print_indent();
+    tree_print(parseTree->id);
     print_indent();
     print_routine(parseTree);
 }
@@ -97,32 +103,26 @@ void value_str(const TreeNode *node) {
         case IntegerK:
             if (node->is_minus)
                 flag = '-';
-//            sprintf(str, "int:%c%d", flag, node->value.int_value);
-            tree_print("int:%c%d", flag, node->value.int_value);
+            tree_print("(int:%c%d)", flag, node->value.int_value);
             break;
         case RealK:
             if (node->is_minus)
                 flag = '-';
-            tree_print("real:%c%.2lf", flag, node->value.real_value);
-//            sprintf(str, "real:%c%.2lf", flag, node->value.real_value);
+            tree_print("(real:%c%.2lf)", flag, node->value.real_value);
             break;
         case CharK:
             if (node->is_minus)
                 flag = '-';
-            tree_print("char:%c%d", flag, node->value.int_value);
-//            sprintf(str, "char:%c%d", flag, node->value.int_value);
+            tree_print("(char:%c%d)", flag, node->value.int_value);
             break;
         case StringK:
-            tree_print("string:%s", node->value.str_value);
-//            sprintf(str, "string:%s", node->value.str_value);
+            tree_print("(string:%s)", node->value.str_value);
             break;
         case BooleanK:
-            tree_print("boolean:%d", node->value.int_value);
-//            sprintf(str, "boolean:%d", node->value.int_value);
+            tree_print("(boolean:%d)", node->value.int_value);
             break;
         default:
             tree_print("[ERR] unknown const value type, cannot print this value.");
-//            sprintf(str, "[ERR] unknown const value type, cannot print this value.");
             break;
     }
     return;
@@ -214,7 +214,6 @@ void params_str(TreeNode *param_node) {
 void stmt_str(TreeNode *stmtNode) {
     switch (stmtNode->kind.stmt_kind){
         case AssignK:
-            print_indent();
             // id [exp] = exp
             if(stmtNode->child[1]){
                 tree_print(stmtNode->id);
@@ -236,7 +235,6 @@ void stmt_str(TreeNode *stmtNode) {
             }
             break;
         case SProcK:
-            print_indent();
             // proc(exp_list)
             if(stmtNode->child[0]) {
                 tree_print(stmtNode->id);
@@ -256,9 +254,20 @@ void stmt_str(TreeNode *stmtNode) {
             print_finish();
             break;
         case ForK:
-
+            tree_print("FOR: ");
+            tree_print(stmtNode->id);
+            tree_print(" := ");
+            node_str(stmtNode->child[0]);
+            node_str(stmtNode->child[1]);
+            node_str(stmtNode->child[2]);
+            print_indent();
+            print_start("DO");
+            print_indent();
+            node_str(stmtNode->child[3]);
+            print_finish();
             break;
         case GotoK:
+            tree_print("GOTO %d", stmtNode->dest);
             break;
         // IF expression THEN stmt [ELSE stmt]
         case IfK:
@@ -266,20 +275,46 @@ void stmt_str(TreeNode *stmtNode) {
             node_str(stmtNode->child[0]);   //expression
             print_finish();
             print_start("THEN");
+            print_indent();
             node_str(stmtNode->child[1]);   //stmt
             print_finish();
             if(stmtNode->child[2]){
                 print_indent();
                 print_start("ELSE");
+                print_indent();
                 node_str(stmtNode->child[2]);
                 print_finish();
             }
             break;
+            // REPEAT stmt_list UNTIL expression
         case RepeatK:
+            print_start("REPEAT");
+            print_indent();
+            node_str(stmtNode->child[0]);   // stmt_list
+            print_indent();
+            tree_print("UNTIL");
+            print_indent();
+            node_str(stmtNode->child[1]);   // expression
+            print_finish();
             break;
         case SCaseK:
+            tree_print("CASE (");
+            node_str(stmtNode->child[0]);   //expression
+            tree_print(") of ");
+            print_start("");
+            node_str(stmtNode->child[1]);   //case expr list
+            print_indent();
+            tree_print("END;");
+            print_finish();
             break;
         case WhileK:
+            tree_print("WHILE ");
+            node_str(stmtNode->child[0]);
+            print_indent();
+            print_start("DO");
+            print_indent();
+            node_str(stmtNode->child[1]);
+            print_finish();
             break;
         default:
             break;
@@ -324,11 +359,14 @@ void factor_str(struct treeNode *factor_node) {
     }
 
     // (exp))
-    if( factor_node->child[0] && factor_node->child[0]->nodekind == ExpressionK){
-        tree_print("(");
-        node_str(factor_node->child[0]);
-        tree_print(")");
-        return;
+    if( factor_node->child[0] ){
+        NodeKind kind = factor_node->child[0]->nodekind;
+        if(kind == ExpressionK || kind == ExprK || kind == TermK || kind == FactorK) {
+            tree_print("(");
+            node_str(factor_node->child[0]);
+            tree_print(")");
+            return;
+        }
     }
 
     // array.element: array[index]
@@ -360,21 +398,11 @@ void term_str(TreeNode *term_node){
 
     // deep first, left first travel
 
-    if (term_node->child[0]->nodekind == TermK)
-        term_str(term_node->child[0]);
-    else if(term_node->child[0]->nodekind == FactorK)
-        factor_str(term_node->child[0]);
-    else
-        tree_print("error");
+    node_str(term_node->child[0]);
 
     print_calc_mark(term_node->kind.expr_kind);
 
-    if (term_node->child[1]->nodekind == TermK)
-        term_str(term_node->child[1]);
-    else if(term_node->child[0]->nodekind == FactorK)
-        factor_str(term_node->child[1]);
-    else
-        tree_print("error");
+    node_str(term_node->child[1]);
 }
 
 void exp_str(TreeNode * exp_node){
@@ -385,21 +413,11 @@ void exp_str(TreeNode * exp_node){
 
     // deep first, left first travel
 
-    if (exp_node->child[0]->nodekind == ExprK)
-        exp_str(exp_node->child[0]);
-    else if(exp_node->child[0]->nodekind == TermK)
-        term_str(exp_node->child[0]);
-    else
-        tree_print("error");
+    node_str(exp_node->child[0]);
 
     print_calc_mark(exp_node->kind.expr_kind);
 
-    if (exp_node->child[1]->nodekind == ExprK)
-        exp_str(exp_node->child[1]);
-    else if(exp_node->child[1]->nodekind == TermK)
-        term_str(exp_node->child[1]);
-    else
-        tree_print("error");
+    node_str(exp_node->child[1]);
 }
 
 void expression_str(TreeNode *expression_node){
@@ -451,82 +469,96 @@ void print_cmp_mark(ExpressionKind kind) {
     }
 }
 
+void direction_str(TreeNode *direction_node) {
+    if(direction_node->kind.direction_kind == ToK)
+        tree_print("to");
+    else if(direction_node->kind.direction_kind == DowntoK)
+        tree_print("downto");
+}
+
 
 void node_str(TreeNode *typeNode) {
 
-    // constant value
-    if (typeNode->nodekind == ConstK) {
-        value_str(typeNode);
-        return;
-    }
-
-    if (typeNode->nodekind == SimpleK) {
-        simple_type_str(typeNode);
-        return;
-    }
-
-    if (typeNode->nodekind == TypeK) {
-        type_str(typeNode);
-        return;
-    }
-
-    if (typeNode->nodekind == NameListK) {
-        name_list_str(typeNode);
-        return;
-    }
-
-    if (typeNode->nodekind == RecordK) {
-        record_str(typeNode);
-        return;
-    }
-
-    if (typeNode->nodekind == VarDeclK){
-        var_str(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == ParaK){
-        params_str(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == RoutineK){
-        print_routine(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == StmtK){
-        stmt_str(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == ExpressionK){
-        expression_str(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == ExpressionListK){
-        expression_list_str(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == ExprK){
-        exp_str(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == FactorK){
-        factor_str(typeNode);
-        return;
-    }
-
-    if(typeNode->nodekind == TermK){
-        term_str(typeNode);
-        return;
+    switch (typeNode->nodekind){
+        case ConstK:
+            value_str(typeNode);
+            break;
+        case SimpleK:
+            simple_type_str(typeNode);
+            break;
+        case TypeK:
+            type_str(typeNode);
+            break;
+        case NameListK:
+            name_list_str(typeNode);
+            break;
+        case RecordK:
+            record_str(typeNode);
+            break;
+        case VarDeclK:
+            var_str(typeNode);
+            break;
+        case ParaK:
+            params_str(typeNode);
+            break;
+        case RoutineK:
+            print_routine(typeNode);
+            break;
+        case StmtK:
+            stmt_str(typeNode);
+            break;
+        case ExpressionK:
+            expression_str(typeNode);
+            break;
+        case ExpressionListK:
+            expression_list_str(typeNode);
+            break;
+        case ExprK:
+            exp_str(typeNode);
+            break;
+        case TermK:
+            term_str(typeNode);
+            break;
+        case FactorK:
+            factor_str(typeNode);
+            break;
+        case DirectionK:
+            direction_str(typeNode);
+            break;
+        case CaseK:
+            case_str(typeNode);
+        default:
+//            tree_print("__unknown_node__");
+            break;
     }
 
     return;
 }
+
+void case_str(TreeNode *case_exp_node) {
+    while(case_exp_node != NULL){
+        print_indent();
+        // const : stmt ;
+        if(case_exp_node->child[1]){
+            node_str(case_exp_node->child[0]);  //const_value
+            tree_print(" : ");
+            node_str(case_exp_node->child[1]);  //stmt
+            tree_print(";");
+        }
+        // id : stmt:
+        else if(case_exp_node->id){
+            tree_print(case_exp_node->id);
+            tree_print(" : ");
+            node_str(case_exp_node->child[0]);
+            tree_print(";");
+        }
+        else
+            tree_print("error;");
+
+        case_exp_node = case_exp_node->sibling;
+    }
+}
+
 
 void expression_list_str(TreeNode *expression_list_node) {
     if(expression_list_node != NULL) {
@@ -639,7 +671,6 @@ void print_func_part(TreeNode *func_proc_node) {
     print_finish();
 }
 
-/* todo: compound_stmt */
 void print_comp_part(TreeNode *comp_node) {
     if(comp_node == NULL)
         return;

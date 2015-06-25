@@ -29,6 +29,24 @@ begin
   age[10]:= 100;
 
   write(fib(n));
+
+  case (grade) of
+    1 : writeln('Excellent!');
+    b : writeln('Well done!');
+    c : writeln('You passed');
+  end;
+
+  for i := 1 to 10 do
+      n := n+1;
+
+  while n < 100
+  do 
+    n := n+1;
+
+  repeat n := n+1;
+  until n = 100;
+
+  goto 3;
   
   if (n = 3) then
       n:=0

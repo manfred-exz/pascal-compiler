@@ -12,7 +12,7 @@ begin
     z := x - 1;
     fib(z);
     x := y + z;
-  end;
+  end.
 end;
 begin
   n:=read;

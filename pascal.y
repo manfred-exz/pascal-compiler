@@ -409,6 +409,7 @@ compound_stmt: SBEGIN stmt_list END
 				$$ = newStmtNode(CompoundK);
 				$$->child[0] = $2;
 			   };
+                
 
 if_stmt: IF expression THEN stmt ELSE stmt
 		 {

@@ -554,11 +554,11 @@ static const yytype_uint16 yyrline[] =
      248,   250,   266,   273,   274,   276,   289,   291,   300,   309,
      310,   312,   325,   327,   333,   340,   353,   355,   360,   362,
      364,   365,   366,   367,   368,   369,   370,   371,   372,   374,
-     380,   387,   395,   400,   407,   413,   420,   427,   434,   441,
-     451,   455,   460,   467,   480,   482,   488,   495,   501,   516,
-     522,   528,   534,   540,   546,   552,   558,   563,   569,   575,
-     581,   586,   592,   598,   604,   610,   615,   620,   626,   631,
-     636,   641,   646,   652
+     380,   387,   395,   400,   407,   414,   421,   428,   435,   442,
+     452,   456,   461,   468,   481,   483,   489,   496,   502,   517,
+     523,   529,   535,   541,   547,   553,   559,   564,   570,   576,
+     582,   587,   593,   599,   605,   611,   616,   621,   627,   632,
+     637,   642,   647,   653
 };
 #endif
 
@@ -2209,7 +2209,7 @@ yyreduce:
     break;
 
   case 75:
-#line 414 "pascal.y" /* yacc.c:1646  */
+#line 415 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newStmtNode(IfK);
 			(yyval)->child[0] = (yyvsp[-4]);
@@ -2220,7 +2220,7 @@ yyreduce:
     break;
 
   case 76:
-#line 421 "pascal.y" /* yacc.c:1646  */
+#line 422 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newStmtNode(IfK);
 			(yyval)->child[0] = (yyvsp[-2]);
@@ -2230,7 +2230,7 @@ yyreduce:
     break;
 
   case 77:
-#line 428 "pascal.y" /* yacc.c:1646  */
+#line 429 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newStmtNode(RepeatK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2240,7 +2240,7 @@ yyreduce:
     break;
 
   case 78:
-#line 435 "pascal.y" /* yacc.c:1646  */
+#line 436 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newStmtNode(WhileK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2250,7 +2250,7 @@ yyreduce:
     break;
 
   case 79:
-#line 442 "pascal.y" /* yacc.c:1646  */
+#line 443 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newStmtNode(ForK);
 			(yyval)->id = (yyvsp[-6])->id;
@@ -2263,7 +2263,7 @@ yyreduce:
     break;
 
   case 80:
-#line 452 "pascal.y" /* yacc.c:1646  */
+#line 453 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newDirectionNode(ToK);
 		   }
@@ -2271,7 +2271,7 @@ yyreduce:
     break;
 
   case 81:
-#line 456 "pascal.y" /* yacc.c:1646  */
+#line 457 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newDirectionNode(DowntoK);
 		   }
@@ -2279,7 +2279,7 @@ yyreduce:
     break;
 
   case 82:
-#line 461 "pascal.y" /* yacc.c:1646  */
+#line 462 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newStmtNode(SCaseK);
 			(yyval)->child[0] = (yyvsp[-3]);
@@ -2289,7 +2289,7 @@ yyreduce:
     break;
 
   case 83:
-#line 468 "pascal.y" /* yacc.c:1646  */
+#line 469 "pascal.y" /* yacc.c:1646  */
     {
 					TreeNode *t = (yyvsp[-1]);
 					if (t != NULL)
@@ -2306,13 +2306,13 @@ yyreduce:
     break;
 
   case 84:
-#line 480 "pascal.y" /* yacc.c:1646  */
+#line 481 "pascal.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[0]);}
 #line 2312 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 483 "pascal.y" /* yacc.c:1646  */
+#line 484 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newCaseNode();
 			(yyval)->child[0] = (yyvsp[-3]);
@@ -2322,7 +2322,7 @@ yyreduce:
     break;
 
   case 86:
-#line 489 "pascal.y" /* yacc.c:1646  */
+#line 490 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newCaseNode();
 			(yyval)->id = (yyvsp[-3])->id;
@@ -2332,7 +2332,7 @@ yyreduce:
     break;
 
   case 87:
-#line 496 "pascal.y" /* yacc.c:1646  */
+#line 497 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newStmtNode(GotoK);
 			(yyval)->dest = atoi(tokenString);
@@ -2341,7 +2341,7 @@ yyreduce:
     break;
 
   case 88:
-#line 502 "pascal.y" /* yacc.c:1646  */
+#line 503 "pascal.y" /* yacc.c:1646  */
     {
 					TreeNode *t = (yyvsp[-2]);
 					TreeNode *newNode = newExpressionListNode();
@@ -2360,7 +2360,7 @@ yyreduce:
     break;
 
   case 89:
-#line 517 "pascal.y" /* yacc.c:1646  */
+#line 518 "pascal.y" /* yacc.c:1646  */
     {
 					(yyval) = newExpressionListNode();
 					(yyval)->child[0] = (yyvsp[0]);
@@ -2369,7 +2369,7 @@ yyreduce:
     break;
 
   case 90:
-#line 523 "pascal.y" /* yacc.c:1646  */
+#line 524 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newExpressionNode(GeK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2379,7 +2379,7 @@ yyreduce:
     break;
 
   case 91:
-#line 529 "pascal.y" /* yacc.c:1646  */
+#line 530 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newExpressionNode(GtK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2389,7 +2389,7 @@ yyreduce:
     break;
 
   case 92:
-#line 535 "pascal.y" /* yacc.c:1646  */
+#line 536 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newExpressionNode(LeK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2399,7 +2399,7 @@ yyreduce:
     break;
 
   case 93:
-#line 541 "pascal.y" /* yacc.c:1646  */
+#line 542 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newExpressionNode(LtK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2409,7 +2409,7 @@ yyreduce:
     break;
 
   case 94:
-#line 547 "pascal.y" /* yacc.c:1646  */
+#line 548 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newExpressionNode(EqualK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2419,7 +2419,7 @@ yyreduce:
     break;
 
   case 95:
-#line 553 "pascal.y" /* yacc.c:1646  */
+#line 554 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = newExpressionNode(UnequalK);
 				(yyval)->child[0] = (yyvsp[-2]);
@@ -2429,7 +2429,7 @@ yyreduce:
     break;
 
   case 96:
-#line 559 "pascal.y" /* yacc.c:1646  */
+#line 560 "pascal.y" /* yacc.c:1646  */
     {
 				(yyval) = (yyvsp[0]);
 			}
@@ -2437,7 +2437,7 @@ yyreduce:
     break;
 
   case 97:
-#line 564 "pascal.y" /* yacc.c:1646  */
+#line 565 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = newExprNode(PlusK);
 		(yyval)->child[0] = (yyvsp[-2]);
@@ -2447,7 +2447,7 @@ yyreduce:
     break;
 
   case 98:
-#line 570 "pascal.y" /* yacc.c:1646  */
+#line 571 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = newExprNode(MinusK);
 		(yyval)->child[0] = (yyvsp[-2]);
@@ -2457,7 +2457,7 @@ yyreduce:
     break;
 
   case 99:
-#line 576 "pascal.y" /* yacc.c:1646  */
+#line 577 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = newExprNode(OrK);
 		(yyval)->child[0] = (yyvsp[-2]);
@@ -2467,7 +2467,7 @@ yyreduce:
     break;
 
   case 100:
-#line 582 "pascal.y" /* yacc.c:1646  */
+#line 583 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = (yyvsp[0]);
 	  }
@@ -2475,7 +2475,7 @@ yyreduce:
     break;
 
   case 101:
-#line 587 "pascal.y" /* yacc.c:1646  */
+#line 588 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = newTermNode(MulK);
 		(yyval)->child[0] = (yyvsp[-2]);
@@ -2485,7 +2485,7 @@ yyreduce:
     break;
 
   case 102:
-#line 593 "pascal.y" /* yacc.c:1646  */
+#line 594 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = newTermNode(DivK);
 		(yyval)->child[0] = (yyvsp[-2]);
@@ -2495,7 +2495,7 @@ yyreduce:
     break;
 
   case 103:
-#line 599 "pascal.y" /* yacc.c:1646  */
+#line 600 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = newTermNode(ModK);
 		(yyval)->child[0] = (yyvsp[-2]);
@@ -2505,8 +2505,8 @@ yyreduce:
     break;
 
   case 104:
-#line 605 "pascal.y" /* yacc.c:1646  */
-    {
+#line 606 "pascal.y" /* yacc.c:1646  */
+    { 
 		(yyval) = newTermNode(AndK);
 		(yyval)->child[0] = (yyvsp[-2]);
 		(yyval)->child[1] = (yyvsp[0]);
@@ -2515,7 +2515,7 @@ yyreduce:
     break;
 
   case 105:
-#line 611 "pascal.y" /* yacc.c:1646  */
+#line 612 "pascal.y" /* yacc.c:1646  */
     {
 		(yyval) = (yyvsp[0]);
 	  }
@@ -2523,7 +2523,7 @@ yyreduce:
     break;
 
   case 106:
-#line 616 "pascal.y" /* yacc.c:1646  */
+#line 617 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newFactorNode();
 			(yyval)->id = copyString(tokenString);
@@ -2532,7 +2532,7 @@ yyreduce:
     break;
 
   case 107:
-#line 621 "pascal.y" /* yacc.c:1646  */
+#line 622 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newFactorNode();
 			(yyval)->id = (yyvsp[-3])->id;
@@ -2542,7 +2542,7 @@ yyreduce:
     break;
 
   case 108:
-#line 627 "pascal.y" /* yacc.c:1646  */
+#line 628 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newFactorNode();
 			(yyval)->child[0] = (yyvsp[0]);
@@ -2551,7 +2551,7 @@ yyreduce:
     break;
 
   case 109:
-#line 632 "pascal.y" /* yacc.c:1646  */
+#line 633 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newFactorNode();
 			(yyval)->child[0] = (yyvsp[-1]);
@@ -2560,7 +2560,7 @@ yyreduce:
     break;
 
   case 110:
-#line 637 "pascal.y" /* yacc.c:1646  */
+#line 638 "pascal.y" /* yacc.c:1646  */
     {
 			(yyvsp[0])->is_not = 1;
 			(yyval) = (yyvsp[0]);
@@ -2569,7 +2569,7 @@ yyreduce:
     break;
 
   case 111:
-#line 642 "pascal.y" /* yacc.c:1646  */
+#line 643 "pascal.y" /* yacc.c:1646  */
     {
 			(yyvsp[0])->is_minus = 1;
 			(yyval) = (yyvsp[0]);
@@ -2578,7 +2578,7 @@ yyreduce:
     break;
 
   case 112:
-#line 647 "pascal.y" /* yacc.c:1646  */
+#line 648 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newFactorNode();
 			(yyval)->id = (yyvsp[-3])->id;
@@ -2588,7 +2588,7 @@ yyreduce:
     break;
 
   case 113:
-#line 653 "pascal.y" /* yacc.c:1646  */
+#line 654 "pascal.y" /* yacc.c:1646  */
     {
 			(yyval) = newFactorNode();
 			(yyval)->id = (yyvsp[-2])->id;
@@ -2826,7 +2826,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 659 "pascal.y" /* yacc.c:1906  */
+#line 660 "pascal.y" /* yacc.c:1906  */
 
 
 int yyerror(char *message)
