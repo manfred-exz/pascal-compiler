@@ -16,14 +16,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d8c5e87-4002-4c11-99a7-def64fb4b657" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/astree.c" afterPath="$PROJECT_DIR$/astree.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pascal.y" afterPath="$PROJECT_DIR$/pascal.y" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/test1.asm" afterPath="$PROJECT_DIR$/examples/test1.asm" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/test1.pas" afterPath="$PROJECT_DIR$/examples/test1.pas" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/test2.asm" afterPath="$PROJECT_DIR$/examples/test2.asm" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/test2.pas" afterPath="$PROJECT_DIR$/examples/test2.pas" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/y.tab.c" afterPath="$PROJECT_DIR$/y.tab.c" />
     </list>
     <ignored path="pascal-compiler.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -309,7 +302,13 @@
       <option name="project" value="LOCAL" />
       <updated>1435251681705</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="1 stage complete">
+      <created>1435258219902</created>
+      <option name="number" value="00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1435258219902</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -359,7 +358,8 @@
     <MESSAGE value="fix an error" />
     <MESSAGE value="all declaration part finished.&#10;todo: compound stmt" />
     <MESSAGE value="backup... I'm crazy now." />
-    <option name="LAST_COMMIT_MESSAGE" value="backup... I'm crazy now." />
+    <MESSAGE value="1 stage complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="1 stage complete" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
