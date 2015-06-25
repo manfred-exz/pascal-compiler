@@ -5,15 +5,15 @@ static FILE *treefile;
 static int nspc;
 
 
-void value_str(char *str, const TreeNode *node);
+void value_str(const TreeNode *node);
 
-void node_str(char *str, TreeNode *typeNode);
+void node_str(TreeNode *typeNode);
 
-void type_str(char *str, const TreeNode *node);
+void type_str(TreeNode *node);
 
-void simple_type_str(char *str, const TreeNode *node);
+void simple_type_str(const TreeNode *node);
 
-void name_list_str(char *str, TreeNode *name_list_node);
+void name_list_str(TreeNode *name_list_node);
 
 // print the structure of the tree
 
@@ -50,12 +50,11 @@ void print_routine(TreeNode *routine) {
     }
 }
 
-void simple_type_str(char *str, const TreeNode *node) {
+void simple_type_str(const TreeNode *node) {
     // simple type
     char *simpleKindStr[8] = {"char", "integer", "real", "string",
                               "boolean", "id", "namelist", "dotdot"};
 
-    char buf[20];
     char buf1[20], buf2[20];
 
     SimpleKind kind = node->kind.simple_kind;
@@ -67,19 +66,19 @@ void simple_type_str(char *str, const TreeNode *node) {
             tree_print("ID: %s", node->id);
             break;
         case DotDotK:
-            node_str(buf1, node->child[0]); //dotL
+            node_str(node->child[0]); //dotL
             tree_print(" .. ");
-            node_str(buf2, node->child[1]); //dotR
+            node_str(node->child[1]); //dotR
             break;
         case SNameListK:
-            name_list_str(buf1, node->child[0]);
+            name_list_str(node->child[0]);
             break;
         default:
             break;
     }
 }
 
-void value_str(char *str, const TreeNode *node) {
+void value_str(const TreeNode *node) {
     SimpleKind kind = node->kind.simple_kind;
     char flag = '+';
 
@@ -119,22 +118,22 @@ void value_str(char *str, const TreeNode *node) {
 }
 
 
-void type_str(char *str, const TreeNode *node) {
+void type_str(TreeNode *node) {
     TypeKind kind = node->kind.type_kind;
     char buf1[1024], buf2[255];
 
     switch (kind) {
         case TypeSimpleK:
-            node_str(str, node->child[0]);  //type
+            node_str(node->child[0]);  //type
             break;
         case TypeArrayK:
             tree_print("array[");
-            node_str(buf1, node->child[0]); //array range
+            node_str(node->child[0]); //array range
             tree_print("] of ");
-            node_str(buf2, node->child[1]); //array element type
+            node_str(node->child[1]); //array element type
             break;
         case TypeRecordK:
-            node_str(buf1, node->child[0]);
+            node_str(node->child[0]);
             break;
         default:
             tree_print("[ERR] unknown type, cannot print this value.");
@@ -145,7 +144,7 @@ void type_str(char *str, const TreeNode *node) {
 
 
 
-void name_list_str(char *str, TreeNode *name_list_node) {
+void name_list_str(TreeNode *name_list_node) {
     int is_first_time = 1;
     tree_print("(");
 
@@ -170,37 +169,39 @@ void record_str(TreeNode *filedNode) {
 
     while(filedNode != NULL){
         print_indent();
-        node_str(buf_name_list, filedNode->child[0]);
-        node_str(type_decl, filedNode->child[1]);
+        node_str(filedNode->child[0]);
+        node_str(filedNode->child[1]);
 
         filedNode = filedNode->sibling;
     }
 
+    nspc -= 2;
     print_indent();
     tree_print("end;");
+    nspc += 2;
     print_finish();
 }
 
-void node_str(char *str, TreeNode *typeNode) {
+void node_str(TreeNode *typeNode) {
 
     // constant value
     if (typeNode->nodekind == ConstK) {
-        value_str(str, typeNode);
+        value_str(typeNode);
         return;
     }
 
     if (typeNode->nodekind == SimpleK) {
-        simple_type_str(str, typeNode);
+        simple_type_str(typeNode);
         return;
     }
 
     if (typeNode->nodekind == TypeK) {
-        type_str(str, typeNode);
+        type_str(typeNode);
         return;
     }
 
     if( typeNode->nodekind == NameListK){
-        name_list_str(str, typeNode);
+        name_list_str(typeNode);
         return;
     }
 
@@ -217,17 +218,15 @@ void print_const_part(TreeNode *part) {
     if (part == NULL)
         return;
 
-    char buf[512];
     TreeNode *constNode;
 
     print_start("[const part]");
     while (part != NULL) {
-        memset((void *)buf, 0, sizeof(buf));
         constNode = part->child[0]; //const value node
         print_indent();
         tree_print("ID: {%s} = ", part->id);
 
-        node_str(buf, constNode);
+        node_str(constNode);
 
         part = part->sibling;
     }
@@ -238,18 +237,36 @@ void print_type_part(TreeNode *part) {
     if (part == NULL)
         return;
 
-    char buf[512];
     TreeNode *typeNode;
 
     print_start("[type part]");
     // the Node 'part' is also a type decl node
     while (part != NULL) {
-        memset((void *)buf, 0, sizeof(buf));
         typeNode = part->child[0];
         print_indent();
         tree_print("ID: {%s} is of type ", part->id);
 
-        node_str(buf, typeNode);
+        node_str(typeNode);
+
+        part = part->sibling;
+    }
+    print_finish();
+}
+
+void print_var_part(TreeNode *part) {
+    if (part == NULL)
+        return;
+
+    TreeNode *typeNode;
+
+    print_start("[type part]");
+    // the Node 'part' is also a type decl node
+    while (part != NULL) {
+        typeNode = part->child[0];
+        print_indent();
+        tree_print("ID: {%s} is of type ", part->id);
+
+        node_str(typeNode);
 
         part = part->sibling;
     }
@@ -269,7 +286,9 @@ void print_routine_part(TreeNode *part) {
         case TypeDeclK:
             print_type_part(part);
             break;
-
+        case VarDeclK:
+            print_var_part(part);
+            break;
         default:
             break;
     }
@@ -280,7 +299,6 @@ void print_routine_part(TreeNode *part) {
 void tree_print(char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    //vfprintf(treefile, fmt, args);
     vfprintf(stdout, fmt, args);
     va_end(args);
 }
